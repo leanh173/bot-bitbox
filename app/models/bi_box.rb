@@ -125,7 +125,7 @@ class BiBox
     write_log "SELL in BTC price > " + btc_offer_bids[eth_alt_btc_name][:price].to_s + " Volume " + volume_eth_alt_btc.to_s + " / " + btc_offer_bids[eth_alt_btc_name][:volume].to_s
     write_log "======================================"
 
-
+    write_log "Estimated Profit: " + ((max_btc_alt_eth*max_eth_alt_btc - 1)*100).to_s + " %"
     # write_log "----------------------------------------"
 
     # write_log("All MONEY : " + get_all_btc.to_s + " BTC")

@@ -121,6 +121,8 @@ namespace :bibox do
     puts "SELL in BTC price > " + btc_offer_bids[eth_alt_btc_name][:price].to_s + " Volume " + volume_eth_alt_btc.to_s + " / " + btc_offer_bids[eth_alt_btc_name][:volume].to_s
     puts "======================================"
 
+    puts "Estimated Profit: " + ((max_btc_alt_eth*max_eth_alt_btc - 1)*100).to_s + " %"
+
 
     # puts "----------------------------------------"
 
