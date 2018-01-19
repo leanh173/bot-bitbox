@@ -2,17 +2,18 @@ require 'rest-client'
 require 'json'
 require 'hmac-md5'
 
-BTC_USDT = 13000
-ETH_USDT = 1300
-MIN_USDT_TRANSACTION = 100 # $100
+class Vet
+  BTC_USDT = 11000
+  ETH_USDT = 1000
+  MIN_USDT_TRANSACTION = 200 # $100
 
-class BiBox
-  attr_reader :log, :min_money, :list_coin
+  attr_reader :log, :min_money, :list_coin, :print_log
 
-  def initialize(min_money=nil, list_coin=nil)
+  def initialize(min_money=nil, list_coin=nil, print_log=nil)
+    @print_log = print_log
     @log = []
     @min_money = min_money || MIN_USDT_TRANSACTION
-    @list_coin = list_coin || ["BIX", "GTC", "LTC", "BCH", "ETC", "TNB", "EOS", "CMT", "BTM", "LEND", "RDN", "MANA", "HPB", "SBTC", "ELF", "MKR", "ITC", "MOT", "GNX", "CAT", "CAG", "SHOW", "AIDOC", "AWR", "BTO", "AMM"]
+    @list_coin = list_coin || list_coin_checked
   end
 
   def fetch_good_trade
@@ -31,11 +32,7 @@ class BiBox
 
     # write_log "loading eth btc price ....."
 
-    url = 'https://api.bibox.com/v1/mdata?cmd=depth&pair=ETH_BTC&size=1'
-    response = JSON.parse(RestClient.get(url))["result"]
-    eth_btc_ask = response["asks"].first["price"]
-    eth_btc_bid = response["bids"].first["price"]
-
+    eth_btc_ask, eth_btc_bid = get_eth_btc_ask_bid
     write_log eth_btc_ask
     write_log eth_btc_bid
 
@@ -48,12 +45,12 @@ class BiBox
     btc_offer_bids = {}; btc_offer_asks = {}; eth_offer_bids = {}; eth_offer_asks = {}
     list_coin.each do |coin_name|
       #process_coin(coin_name, eth_btc_ask, eth_btc_bid)
-      #write_log coin_name
+      write_log coin_name if @print_log
       offer_coin_btc = get_offer coin_name, "BTC"
       btc_offer_bids[coin_name] = offer_coin_btc[:bid]
       btc_offer_asks[coin_name] = offer_coin_btc[:ask]
 
-      offer_coin_eth = get_offer coin_name, "ETH"
+      offer_coin_eth = get_offer coin_name, coin_exchange
       eth_offer_bids[coin_name] = offer_coin_eth[:bid]
       eth_offer_asks[coin_name] = offer_coin_eth[:ask]
     end
@@ -86,7 +83,7 @@ class BiBox
 
     write_log "================BTC======================"
     write_log btc_alt_eth_name
-    write_log max_btc_alt_eth
+    write_log max_btc_alt_eth.to_s + " ~ " + (1/max_btc_alt_eth).to_s
     write_log volume_btc_alt_eth.to_s + " ~ $" + (volume_btc_alt_eth*btc_offer_asks[btc_alt_eth_name][:price]*BTC_USDT).to_i.to_s
     write_log 1/(eth_btc_ask.to_f)
     write_log 1/(eth_btc_bid.to_f)
@@ -136,29 +133,28 @@ class BiBox
 
   def write_log data
     @log << data
+    puts data if @print_log
   end
 
   def get_offer coin, big_coin
-    url = "https://api.bibox.com/v1/mdata?cmd=depth&pair=#{coin}_#{big_coin}&size=10"
-    response = JSON.parse(RestClient.get(url))
-    bid = find_good_bid response["result"]["bids"], big_coin
-    ask = find_good_ask response["result"]["asks"], big_coin
-    {bid: bid, ask: ask}
   end
 
   def find_good_bid order_list, big_coin
-    price = (big_coin == "BTC" ? BTC_USDT : ETH_USDT)
-    order_list.sort_by{|a| -a["price"].to_f}.each do |order|
-      return {price: order["price"].to_f, volume: order["volume"].to_f} if order["price"].to_f * order["volume"].to_f * price > @min_money
-    end
-    nil
   end
 
   def find_good_ask order_list, big_coin
-    price = (big_coin == "BTC" ? BTC_USDT : ETH_USDT)
-    order_list.sort_by{|a| a["price"].to_f}.each do |order|
-      return {price: order["price"].to_f, volume: order["volume"].to_f} if order["price"].to_f * order["volume"].to_f * price > @min_money
-    end
-    nil
+  end
+
+  def list_coin_checked
+    []
+  end
+
+  def get_eth_btc_ask_bid
+    eth_btc = get_offer coin_exchange, "BTC"
+    [eth_btc[:ask][:price], eth_btc[:bid][:price]]
+  end
+
+  def coin_exchange #like ETH
+    "ETH"
   end
 end
