@@ -1,4 +1,8 @@
 class Binance < Vet
+  BTC_USDT = 11000
+  ETH_USDT = 14
+  MIN_USDT_TRANSACTION = 200 # $100
+
   def get_offer coin, big_coin
     url = "https://www.binance.com/api/v1/depth?symbol=#{coin}#{big_coin}"
     response = JSON.parse(RestClient.get(url))
@@ -23,9 +27,13 @@ class Binance < Vet
     nil
   end
 
+  def coin_exchange #default ETH
+    "BNB"
+  end
+
   def list_coin_checked
     url = 'https://www.binance.com/exchange/public/product'
     response = JSON.parse(RestClient.get(url))["data"]
-    response.select{|a| a["quoteAssetName"] == "Ethereum"}.map{|b| b["baseAsset"]}
+    response.select{|a| a["quoteAssetName"] == "Binance"}.map{|b| b["baseAsset"]}
   end
 end

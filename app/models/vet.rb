@@ -112,8 +112,8 @@ class Vet
 
     write_log "==================ETH===================="
     write_log eth_alt_btc_name
-    write_log max_eth_alt_btc
-    write_log volume_eth_alt_btc.to_s + " ~ $" + (volume_eth_alt_btc*eth_offer_asks[eth_alt_btc_name][:price]*ETH_USDT).to_i.to_s
+    write_log max_eth_alt_btc.to_s + " ~ " + (1/max_eth_alt_btc).to_s
+    write_log volume_eth_alt_btc.to_s + " ~ $" + (volume_eth_alt_btc*eth_offer_asks[eth_alt_btc_name][:price]*price_coin_exchange_usd).to_i.to_s
     write_log eth_btc_ask.to_f
     write_log eth_btc_bid.to_f
     write_log "<<<<<< SHIT! DO NOT TRADE HERE >>>>>" if max_eth_alt_btc < eth_btc_bid.to_f
@@ -156,5 +156,9 @@ class Vet
 
   def coin_exchange #like ETH
     "ETH"
+  end
+
+  def price_coin_exchange_usd
+    ETH_USDT
   end
 end
