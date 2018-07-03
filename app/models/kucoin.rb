@@ -1,7 +1,9 @@
-class Bibox < Vet
+class Kucoin < Vet
   def get_offer coin, big_coin
     url = "https://api.bibox.com/v1/mdata?cmd=depth&pair=#{coin}_#{big_coin}&size=10"
+    url = "https://kitchen.kucoin.com/v1/open/deal-orders?symbol=#{coin}-#{big_coin}&limit=50&c=&lang=en_US"
     response = JSON.parse(RestClient.get(url))
+
     bid = find_good_bid response["result"]["bids"], big_coin
     ask = find_good_ask response["result"]["asks"], big_coin
     {bid: bid, ask: ask}
@@ -25,9 +27,13 @@ class Bibox < Vet
 
   def get_eth_btc_ask_bid
     url = 'https://api.bibox.com/v1/mdata?cmd=depth&pair=ETH_BTC&size=1'
-    response = JSON.parse(RestClient.get(url))["result"]
-    eth_btc_ask = response["asks"].first["price"]
-    eth_btc_bid = response["bids"].first["price"]
+    url = "https://kitchen.kucoin.com/v1/open/orders-buy?symbol=ETH-BTC&limit=1&c=&lang=en_US"
+    response = JSON.parse(RestClient.get(url))["data"]
+    eth_btc_bid = response.first.first
+
+    url = "https://kitchen.kucoin.com/v1/open/orders-sell?symbol=ETH-BTC&limit=1&c=&lang=en_US"
+    response = JSON.parse(RestClient.get(url))["data"]
+    eth_btc_ask = response.first.first
     [eth_btc_ask, eth_btc_bid]
   end
 
