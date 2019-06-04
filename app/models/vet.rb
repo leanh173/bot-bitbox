@@ -3,9 +3,9 @@ require 'json'
 require 'hmac-md5'
 
 class Vet
-  BTC_USDT = 6600
-  ETH_USDT = 473
-  MIN_USDT_TRANSACTION = 100 # $100
+  BTC_USDT = 7900
+  ETH_USDT = 245
+  MIN_USDT_TRANSACTION = 50 # $100
 
   attr_reader :log, :min_money, :list_coin, :print_log
 

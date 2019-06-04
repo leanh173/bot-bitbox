@@ -32,6 +32,6 @@ class Bibox < Vet
   end
 
   def list_coin_checked
-    ["BIX", "GTC", "LTC", "BCH", "ETC", "TNB", "EOS", "CMT", "BTM", "LEND", "RDN", "MANA", "HPB", "ELF", "MKR", "ITC", "MOT", "GNX", "CAT", "CAG", "AIDOC", "BTO", "AMM"]
+    ["BIX", "LTC", "BCH", "ETC", "EOS", "CMT", "BTM", "LEND", "RDN", "MANA", "HPB", "ELF", "MKR", "ITC", "GNX"]
   end
 end
